@@ -38,10 +38,11 @@ df_invoice = pd.read_csv( base_path + file_id_invoice)
 
 df_PurchasePrices.head()
 ##1) Transformar las columnas de fechas para que tengan todas el mismo formato (datetime)
-def format_date(df, column, separator):
+def format_date(df, column, separator, order1, order2, order3):
     try:
-        df[column] = pd.to_datetime(df[column], format=f"%Y{separator}%m{separator}%d")
+        df[column] = pd.to_datetime(df[column], format=f"%{order1}{separator}%{order2}{separator}%{order3}")
         df[column] = df[column].dt.strftime("%d-%m-%Y")
+        df[column] = pd.to_datetime(df[column], format="%d-%m-%Y")
     except ValueError:
         print('there is a value error ')
 
@@ -68,12 +69,71 @@ ifnaValues(df_sales)
 #    "no_definido"
 df_BeginInv.head()
 
+#5) En base a la tabla df_EndInv calcular cuantas unidades de cada marca quedaron
+
+# groupby and aggregate COLUMN
+totalStock = df_EndInv.groupby('Brand')['onHand'].sum().reset_index()
+
+# Rename the column 
+totalStock.rename(columns={'onHand': 'totalStock'}, inplace=True)
+
+#  Merge 
+control = df_EndInv[['Brand']].drop_duplicates()  # make sure 'Brand' is unique
+control = control.merge(totalStock, on='Brand', how='left')
+
+print(control)
+
+
+
 df_EndInv.head()
 
-format_date(df_purchases, "ReceivingDate", '-')
-format_date(df_purchases, "InvoiceDate", '-')
-format_date(df_purchases, "PayDate", '-')
+
+
+format_date(df_purchases, "ReceivingDate", '-','Y', 'm', 'd')
+format_date(df_purchases, "InvoiceDate", '-', 'Y', 'm', 'd')
+format_date(df_purchases, "PODate", '-', 'Y', 'm', 'd')
+format_date(df_purchases, "PayDate", '-', 'Y', 'm', 'd')
+
 df_purchases.head()
+
+
+dffilter = df_purchases[df_purchases['VendorName'] == 'ATLANTIC IMPORTING COMPANY ']
+#dffilter = dffilter[['VendorName', 'VendorNumber']]
+
+rezagoDias = (dffilter['ReceivingDate'] -  dffilter['PODate']).dt.days
+rezagoDias.head()
+
+
+
+#3)df_purchases Crear una variable que represente el rezago en dias de llegada de los productos pedidos.
+#rezagoDias = (dffilter['ReceivingDate'] -  dffilter['PODate']).dt.days
+
+#df_purchases.head()
+#4) En base a esa variable calcular la media, el maximo y el minimo de rezago por marca ('Brand')
+rezago_min = min(rezagoDias)
+rezago_max = max(rezagoDias)
+rezago_media = np.mean(rezagoDias)
+
+print(f'max: {rezago_max}, min: {rezago_min}, mean: {rezago_media}')
+rezagoDias.describe()
+
+
+#6) Filtrar los datos de las tablas df_sales y df_purchases para solo quedarme con info de Noviembre.
+df_purch_sales = df_purchases.merge(df_sales, left_on='InventoryId', right_on='InventoryId', how='outer')
+
+type(df_purch_sales['SalesDate'])
+
+
+format_date(df_purch_sales, 'SalesDate', '-', 'Y', 'm', 'd')
+df_purch_sales['SalesDate'].head()
+
+#--------------------------------------------------------------------------------------ERROR ISSUES
+nov_df_purchSales = df_purch_sales[df_purch_sales['SalesDate'].dt.month == 11]
+nov_df_purchSales.head()
+#--------------------------------------------------------------------------------------ERROR ISSUES
+
+
+
 
 #3) En la tabla df_purchases Crear una variable que represente el rezago en dias de llegada de los productos pedidos.
 
