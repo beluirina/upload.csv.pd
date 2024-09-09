@@ -5,11 +5,11 @@ Uso de Pandas, Numpy para practicar subida de archivos CSV y la ELT de la data.
 Consignas por archivos:
 29082024
   
-1.Leer los datos del archivo CSV en un DataFrame de Pandas.
-2.Crear una clase Producto que contenga los atributos nombre, categoría, cantidad, y precio.
-3.Crear una clase Inventario que permita agregar productos y calcular el valor total del inventario.
-4.Implementar un método en Inventario que permita buscar un producto por nombre y manejar posibles errores.
-5.Escribir un conjunto de pruebas unitarias para asegurarte de que las funciones funcionan correctamente.
+1) Leer los datos del archivo CSV en un DataFrame de Pandas.
+2) Crear una clase Producto que contenga los atributos nombre, categoría, cantidad, y precio.
+3) Crear una clase Inventario que permita agregar productos y calcular el valor total del inventario.
+4) Implementar un método en Inventario que permita buscar un producto por nombre y manejar posibles errores.
+5) Escribir un conjunto de pruebas unitarias para asegurarte de que las funciones funcionan correctamente.
 
 03092024
 
